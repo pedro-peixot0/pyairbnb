@@ -27,10 +27,34 @@ def get(proxy_url: str, timeout: Timeout = DEFAULT_TIMEOUT) -> str:
         proxies = {"http": proxy_url, "https": proxy_url}
 
     response = requests.get(ep, headers=headers, proxies=proxies, timeout=timeout)
-    response.raise_for_status() 
+    response.raise_for_status()
 
     body = response.text
-    api_key = regx_api_key.search(body).group()
+    api_key_match = regx_api_key.search(body)
+
+    if not api_key_match:
+        # Airbnb may return a domain-switch landing page instead of the actual homepage.
+        handoff_match = re.search(r'<form[^>]+action="([^"]+)"', body)
+        payload_match = re.search(r'<input[^>]+name="payload"[^>]+value="([^"]+)"', body)
+
+        if handoff_match and payload_match:
+            handoff_url = handoff_match.group(1)
+            payload_value = payload_match.group(1)
+            response = requests.post(
+                handoff_url,
+                data={"version": "1", "payload": payload_value},
+                headers=headers,
+                proxies=proxies,
+                timeout=60,
+            )
+            response.raise_for_status()
+            body = response.text
+            api_key_match = regx_api_key.search(body)
+
+    if not api_key_match:
+        raise Exception("Could not parse Airbnb API key from the homepage response.")
+
+    api_key = api_key_match.group()
     api_key = api_key.replace('"api_config":{"key":"', '')
     api_key = api_key.replace('"', "")
     return api_key
