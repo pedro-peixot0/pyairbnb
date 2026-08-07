@@ -17,15 +17,17 @@ from pyairbnb.start import (
 )
 from pyairbnb.details import get as get_metadata_from_url
 from pyairbnb.price import get as get_price
-from pyairbnb.calendar_models import (
-    CalendarConditionRange,
-    CalendarConditions,
+from pyairbnb.calendar_contract import (
     CalendarContractError,
     CalendarContractIssue,
     CalendarContractWarning,
+    CalendarExtractionError,
+)
+from pyairbnb.models import (
+    CalendarConditionRange,
+    CalendarConditions,
     CalendarDay,
     CalendarDayPrice,
-    CalendarExtractionError,
     CalendarMonth,
 )
 

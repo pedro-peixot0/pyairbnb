@@ -7,12 +7,12 @@ import pyairbnb.utils as utils
 import pyairbnb.standardize as standardize
 import pyairbnb.experience as experience
 import pyairbnb.calendarinfo as calendar
-from pyairbnb.calendar_models import (
+from pyairbnb.calendar_contract import (
     CalendarContractError,
     CalendarContractWarning,
-    CalendarMonth,
 )
-from pyairbnb.calendar_parser import parse_calendar
+from pyairbnb.models import CalendarMonth
+from pyairbnb.parsers.calendar import parse_calendar
 import pyairbnb.host_details as host_details
 from pyairbnb.utils import DEFAULT_TIMEOUT, Timeout
 from datetime import datetime
